@@ -46,17 +46,19 @@ def checkout():
     return render_template("checkout.html")
 
 # -------------------- Init DB with sample products --------------------
-@app.before_first_request
 def setup_db():
-    db.create_all()
-    if Product.query.count() == 0:
-        db.session.add_all([
-            Product(name="Laptop", price=700),
-            Product(name="Phone", price=300),
-            Product(name="Headphones", price=50),
-        ])
-        db.session.commit()
+    """Initialize database and add sample products if empty."""
+    with app.app_context():
+        db.create_all()
+        if Product.query.count() == 0:
+            db.session.add_all([
+                Product(name="Laptop", price=700),
+                Product(name="Phone", price=300),
+                Product(name="Headphones", price=50),
+            ])
+            db.session.commit()
 
 # -------------------- Run --------------------
 if __name__ == "__main__":
+    setup_db()  # Run once when app starts
     app.run(host="0.0.0.0", port=5000)
